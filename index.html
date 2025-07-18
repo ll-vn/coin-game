@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Coin flip</title>
+    <style>
+      :root {
+        /* Light mode */
+        --bg: #f2f5f9;
+        --coinBg: radial-gradient(circle at 30% 30%, #ffb400, #ffa500);
+        --text: #1c1c1e;
+        --primary: #00c07b;
+        --secondary: #ffb400;
+        --accent: #ff4d6d;
+        --muted: #6b7280;
+        --border: #d1d5db;
+        --success: #22c55e;
+        --error: #ef4444;
+        --disabled: #e5e7eb;
+      }
+      /* dark mode*/
+      [data-theme="dark"] {
+        --bg: #0f1115;
+        --coinBg: radial-gradient(circle at 30% 30%, #ffc94d, #ffb400);
+        --text: #f9f9fa;
+        --primary: #00ffb2;
+        --secondary: #ffc94d;
+        --accent: #ff758f;
+        --muted: #515864;
+        --border: #2c2f36;
+        --success: #4ade80;
+        --error: #f87171;
+        --disabled: #3a3d44;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        text-decoration: none;
+      }
+
+      a {
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg);
+        font-family: "Poppins", sans-serif;
+      }
+
+      h1,
+      .title {
+        font-family: "Orbitron", sans-serif;
+      }
+
+      h1 {
+        color: var(--text);
+      }
+
+      .top-container {
+        max-width: 100vw;
+        background-color: var(--bg);
+        transition: background-color 0.5s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        border-bottom: 1.5px solid var(--muted);
+        color: var(--text);
+        background-color: var(--bg);
+        width: 100vw;
+        margin-bottom: 20px;
+        
+      }
+
+      .header-div {
+        display: flex;
+        color: var(--text);
+        transition: color 0.5s ease-in-out;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      #container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 90vw;
+        border: 1px solid #666;
+        background-color: var(--muted);
+        height: 80px;
+        border-radius: 0.7rem;
+      }
+
+      .js-username {
+        width: 70%;
+        height: 40px;
+        border: none;
+        outline: none;
+        padding-left: 15px;
+        border-radius: 0.4rem;
+      }
+
+      #container button {
+        height: 40px;
+        width: 20%;
+        border-radius: 0.4rem;
+        background-color: var(--border);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      #container button:hover {
+        background-color: var(--muted);
+      }
+
+      .js-result {
+        margin: 20px 0;
+        width: 80vw;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 0.7rem;
+        background-color: var(--bg);
+        color: var(--primary);
+        font-size: large;
+        font-weight: bold;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+      }
+
+      .game-rule {
+        position: fixed;
+        top: -60px;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding-left: 20px;
+        padding-right: 10px;
+        padding-bottom: 30px;
+        border-top-left-radius: 1.1rem;
+        border-top-right-radius: 1.1rem;
+        z-index: 19990;
+        gap: 10px;
+        width: 100vw;
+        line-height: 2;
+        background-color: var(--border);
+        color: var(--text);
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+      }
+
+      .game-rule.open {
+        max-height: 100vh;
+        bottom: 0;
+        top: 60px;
+      }
+
+      .game-rule li {
+        line-height: 1.6;
+        margin-bottom: 8px;
+        word-spacing: 3;
+      }
+
+      .game-rule ul {
+        padding-left: 5px;
+      }
+
+      .game-rule button {
+        width: 130px;
+        height: 50px;
+        font-weight: bold;
+        background-color: var(--primary);
+        color: var(--text);
+        border-radius: 0.7rem;
+        border: none;
+      }
+
+      .game-box {
+        padding: 15px;
+        margin: 20px 0;
+        width: 95vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 0.7rem;
+      }
+
+      .btns {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-evenly;
+        gap: 60px;
+      }
+
+      .btn {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin-top: 15px;
+        color: var(--text);
+        background-color: var(--coinBg);
+        font-weight: bolder;
+        border: 5px solid var(--border);
+        box-shadow: 0 4px 6px rgb(0, 0, 0, 0.3);
+        transition: transform 0.2s ease-in-out, box-shadow 0.5s ease-in-out;
+        font-size: large;
+      }
+
+      .btn:active {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.6);
+      }
+
+      .btn:hover {
+        background-color: var(--coinBg);
+      }
+
+      .score-board {
+        margin: 20px 0;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .score-count {
+        border: none;
+        background-color: var(--success);
+        font-size: medium;
+        font-weight: 600;
+        min-width: 140px;
+        text-align: center;
+        max-width: calc(max-content + 6px);
+        border-radius: 0.7rem;
+        padding: 8px 15px;
+      }
+
+      .negative-score {
+        background-color: var(--error);
+      }
+
+      .js-score {
+        font-size: x-large;
+      }
+
+      .motivation {
+        margin: 20px auto;
+        padding-top: 15px;
+        font-weight: bold;
+        font-size: x-large;
+      }
+
+      .do-not-display {
+        visibility: hidden;
+      }
+
+      .btn-plus {
+        background-color: var(--border);
+        min-width: 70px;
+        color: var(--text);
+        height: 45px;
+        width: calc(max-content + 10px);
+        border: none;
+        border-radius: 0.7rem;
+        font-weight: bold;
+        padding: auto 5px;
+      }
+
+      .active-green {
+        background-color: var(--success);
+        color: var(--text);
+      }
+
+      .active-blue {
+        background-color: #2d89f1;
+        color: var(--text);
+      }
+
+      .user-state {
+        color: var(--text);
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      #timer-count {
+        background-color: var(--bg);
+        color: var(--success);
+        padding: 5px 7px;
+      }
+
+      @keyframes bounce {
+        0% {
+          transform: scale(1);
+        }
+        30% {
+          transform: scale(1.3);
+        }
+        60% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .bounce {
+        animation: bounce 0.5s ease-in-out;
+      }
+
+      .link {
+        color: var(--text);
+      }
+
+      .rock-link {
+        color: var(--accent);
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        width: 100vw;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        justify-content: center;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      .message-box {
+        margin: 50% auto;
+        width: 95vw;
+        color: var(--text);
+        background-color: var(--muted);
+        display: flex;
+        gap: 30px;
+        max-width: 600px;
+        font-weight: bolder;
+        font-size: large;
+        border-radius: 0.7rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        transform: scale(0.95);
+        transition: transform 0.5s ease-in-out;
+      }
+
+      .modal-overlay.active .message-box {
+        transform: scale(1);
+      }
+
+      .message-box p {
+        line-height: 2;
+        text-align: center;
+        word-spacing: 2;
+        color: white;
+      }
+
+      .message-box button {
+        width: 90px;
+        height: 50px;
+        font-weight: bolder;
+        font-size: large;
+        color: var(--text);
+        background-color: var(--primary);
+        border-radius: 0.7rem;
+      }
+
+      .message-box button:hover {
+        background-color: var(--success);
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      @media (min-width: 650px) {
+        .top-container {
+          width: 600px;
+        }
+        #container {
+          width: 560px;
+        }
+        .js-result {
+          width: 500px;
+        }
+        .game-box {
+          width: 560px;
+        }
+        .btn {
+          width: 150px;
+          height: 150px;
+        }
+        .game-rule {
+          top: 70px;
+          left: 0;
+          padding: 30px;
+          justify-content: start;
+          min-height: 100vh;
+          gap: 5rem;
+          width: 100vw;
+          background-color: var(--border, #fff);
+          color: var(--text, #1c1c1e);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h2>
+        <a href="https://x.com/pastey_0?s=11" target="_blank">PastéyCodes</a>
+      </h2>
+      <div class="header-div">
+        <div class="js-game-rule">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="currentColor"
+            class="icon-style"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm.75 15a.75.75 0 0 1-1.5 0v-5a.75.75 0 0 1 1.5 0Zm-.75-7a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z"
+            />
+          </svg>
+        </div>
+        <div class="js-toggle" id="themeToggleBtn">
+          <span id="iconContainer"></span>
+        </div>
+        <div class="soundToggle" id="soundToggleBtn" aria-label="Toggle sound">
+          <svg
+            id="soundOn"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="35"
+            height="35"
+            fill="currentColor"
+          >
+            <path
+              d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06
+           c1.48-.74 2.5-2.26 2.5-4.03z"
+            />
+            <path d="M0 0h24v24H0z" fill="none" />
+          </svg>
+          <svg
+            id="soundOff"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="35"
+            height="35"
+            fill="currentColor"
+            style="display: none"
+          >
+            <path
+              d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06
+           c1.48-.74 2.5-2.26 2.5-4.03z"
+            />
+            <path
+              d="M19 12c0 2.83-1.63 5.28-4 6.44V5.56
+           C17.37 6.72 19 9.17 19 12z"
+              opacity=".3"
+            />
+            <path
+              d="M3 9v6h4l5 5V4L7 9H3zm12.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06
+            c1.48-.74 2.5-2.26 2.5-4.03z"
+            />
+            <path d="M22 3 3 22l1.41 1.41L23.41 4.41z" />
+          </svg>
+        </div>
+      </div>
+    </header>
+    <div class="top-container">
+      <div>
+        <div id="container">
+          <input
+            type="text"
+            class="js-username"
+            placeholder="Enter your name please..."
+            onkeydown="submitOnKeyDown(event)"
+          />
+          <button onclick="output()">Submit</button>
+        </div>
+        <p class="js-result"></p>
+      </div>
+      <div>
+        <div class="modal-overlay" id="modal">
+          <div class="message-box modal-content">
+            <p class="dialog-text"></p>
+            <button class="dialog-ok">Ok</button>
+          </div>
+        </div>
+        <div class="game-rule">
+          <h2>Game Rule:</h2>
+          <ul>
+            <li>
+              The computer randonly picks a side of a coin between Heads and
+              Tails. It is your job to make a right guess of the side the
+              computer picks.
+            </li>
+            <li>
+              For every right guess, your score, starting at 0 gets an increment
+              of 1 point.
+            </li>
+            <li>
+              Conversely, for every wrong guess, your score gets a decrement of
+              one point.
+            </li>
+            <li>
+              Your challenge is to get a positive score of at least 15 before
+              timeout.
+            </li>
+            <li>
+              Your number of attempts and wins will be updated as you play.
+            </li>
+            <li>
+              Also, you get the chance to reset the score whenever you want. So
+              good luck!!!
+            </li>
+          </ul>
+          <button class="js-game-rule-btn">Close</button>
+        </div>
+      </div>
+      <h1>A COIN FLIP GAME</h1>
+      <div class="game-box">
+        <h2>The computer just picked a side. Do you think you can guess it?</h2>
+        <div class="btns">
+          <button class="btn heads">Heads</button>
+          <button class="btn tails">Tails</button>
+        </div>
+        <p class="motivation"></p>
+        <h2>You have: <span id="timer-count">00:00</span> left</h2>
+        <div class="score-board">
+          <p class="score-count">Score: <span class="js-score">0</span></p>
+          <button id="btn" class="btn-plus">Start Game</button>
+          <button class="reset-btn btn-plus" onclick="resetScore()">
+            Reset Score
+          </button>
+        </div>
+        <div>
+          <p class="user-state">Attempts: <span id="attempts">0</span></p>
+          <p class="user-state">wins: <span id="wins">0</span></p>
+        </div>
+      </div>
+      <p class="link">
+        Wanna play Rock, paper, & scissors game instead?
+        <a href="/rock.html" class="rock-link">Click here.</a>
+      </p>
+    </div>
+
+    <script>
+      const soundToggleBtn = document.getElementById("soundToggleBtn");
+      const soundOn = document.getElementById("soundOn");
+      const soundOff = document.getElementById("soundOff");
+      const coinSound = new Audio("assets/sound.mp3");
+      const backgroundSound = new Audio("assets/background.mp3");
+      const usernameOutput = document.querySelector(".js-result");
+      const usernameInput = document.querySelector(".js-username");
+      const errorMsg =
+        "Opps!!! Can't play game. It's either that you have not started the game or you have exhausted your time!";
+      const toggleMode = document.querySelector(".js-toggle");
+      const iconContainer = document.getElementById("iconContainer");
+      let html = document.documentElement;
+      const lightIconSVG = `<svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M12 4.5a1 1 0 0 1 1-1V2a1 1 0 0 0-2 0v1.5a1 1 0 0 1 1 1Zm0 15a1 1 0 0 1 1 1V22a1 1 0 0 0-2 0v-1.5a1 1 0 0 1 1-1Zm9-7a1 1 0 0 1 1 1h1.5a1 1 0 0 0 0-2H22a1 1 0 0 1-1 1ZM3 12a1 1 0 0 1-1-1H.5a1 1 0 0 0 0 2H2a1 1 0 0 1 1-1Zm15.364 6.364a1 1 0 0 1 1.414 0l1.06 1.06a1 1 0 1 0 1.415-1.415l-1.06-1.06a1 1 0 0 1-1.415 1.415Zm-12.728 0a1 1 0 0 1-1.415-1.415l1.06-1.06a1 1 0 1 1 1.415 1.415l-1.06 1.06ZM17.657 6.343a1 1 0 0 1 0-1.415l1.06-1.06a1 1 0 1 1 1.415 1.415l-1.06 1.06a1 1 0 0 1-1.415 0ZM6.343 6.343a1 1 0 0 1-1.415 0l-1.06-1.06a1 1 0 0 1 1.415-1.415l1.06 1.06a1 1 0 0 1 0 1.415ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z" />
+</svg>`;
+      const darkIconSVG = `<svg id="darkIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M21.75 14.4a.75.75 0 0 0-.89-.89 7.5 7.5 0 0 1-9.47-9.47.75.75 0 0 0-.89-.89 9.001 9.001 0 1 0 11.25 11.25Z" />
+</svg>`;
+      const showGameRule = document.querySelector(".js-game-rule");
+      const closeGameRule = document.querySelector(".js-game-rule-btn");
+      let scoreBoard = document.querySelector(".js-score");
+      let motivation = document.querySelector(".motivation");
+      const resetBtn = document.querySelector(".reset-btn");
+      const startBtn = document.getElementById("btn");
+      const headCoin = document.querySelector(".heads");
+      const tailCoin = document.querySelector(".tails");
+      const counter = document.getElementById("timer-count");
+      let scoreCount = Number(scoreBoard.innerHTML);
+      let isStarted = false;
+      let timerId;
+      let timeLeft;
+      let userScore = 0;
+      let attempts = 0;
+      let startCount = 0;
+      resetBtn.disabled = true;
+      let muted = false;
+      backgroundSound.volume = 0.5;
+      backgroundSound.loop = true;
+      coinSound.volume = 0.5;
+
+      toggleMode.addEventListener("click", () => {
+        html.dataset.theme = html.dataset.theme === "light" ? "dark" : "light";
+      });
+
+      function updateThemeIcon(theme) {
+        iconContainer.innerHTML = theme === "dark" ? darkIconSVG : lightIconSVG;
+      }
+
+      let currentTheme = localStorage.getItem("theme") || "light";
+      html.dataset.theme = currentTheme;
+      updateThemeIcon(currentTheme);
+
+      document
+        .getElementById("themeToggleBtn")
+        .addEventListener("click", () => {
+          currentTheme = currentTheme === "light" ? "dark" : "light";
+          html.dataset.theme = currentTheme;
+          localStorage.setItem("theme", currentTheme);
+          updateThemeIcon(currentTheme);
+        });
+
+      soundToggleBtn.addEventListener("click", () => {
+        muted = !muted;
+        backgroundSound.muted = muted;
+        soundOn.style.display = muted ? "none" : "block";
+        soundOff.style.display = muted ? "block" : "none";
+      });
+      document.addEventListener(
+        "click",
+        () => {
+          if (backgroundSound.paused) backgroundSound.play().catch(() => {});
+        },
+        { once: true }
+      );
+
+      function submitOnKeyDown(event) {
+        if (event.key === "Enter") {
+          output();
+        }
+      }
+      function output() {
+        if (usernameInput.value) {
+          usernameOutput.innerHTML = `Player's name: ${usernameInput.value}`;
+        } else {
+          document.querySelector("#modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+          document.querySelector(".dialog-text").textContent =
+            "Please, input your name.";
+        }
+      }
+
+      showGameRule.addEventListener("click", () => {
+        document.querySelector(".game-rule").classList.add("open");
+        document.body.style.overflow = "none";
+      });
+
+      closeGameRule.addEventListener("click", () => {
+        document.querySelector(".game-rule").classList.remove("open");
+        document.body.style.overflow = "hidden";
+      });
+
+      // USER DASHBOARD
+      let currentPlayer = "";
+      let userDashboard = JSON.parse(localStorage.getItem(currentPlayer)) || {
+        attempts: 0,
+        wins: 0,
+      };
+      updateScore();
+
+      startBtn.addEventListener("click", () => {
+        const name = usernameInput.value.trim();
+        if (name) {
+          if (startBtn.disabled) return;
+          currentPlayer = name;
+          startBtn.disabled = true;
+          resetBtn.disabled = false;
+          isStarted = true;
+          startCount++;
+          startBtn.textContent = "Running";
+          startTimer();
+          updateScore();
+        } else {
+          document.querySelector("#modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+          document.querySelector(".dialog-text").textContent =
+            "You must enter your name to start the game.";
+        }
+      });
+
+      headCoin.addEventListener("click", () => {
+        if (isStarted && timeLeft > 0) {
+          coinSound.currentTime = 0;
+          coinSound.play();
+          headCoin.classList.add("bounce");
+          setTimeout(() => headCoin.classList.remove("bounce"), 1000);
+          playGame("heads");
+        } else {
+          document.querySelector("#modal").classList.add("active");
+          document.querySelector(".dialog-text").textContent = errorMsg;
+          document.body.style.overflow = "hidden";
+        }
+      });
+
+      tailCoin.addEventListener("click", () => {
+        if (isStarted && timeLeft > 0) {
+          coinSound.currentTime = 0;
+          coinSound.play();
+          tailCoin.classList.add("bounce");
+          setTimeout(() => tailCoin.classList.remove("bounce"), 300);
+          playGame("tails");
+        } else {
+          document.querySelector("#modal").classList.add("active");
+          document.querySelector(".dialog-text").textContent = errorMsg;
+          document.body.style.overflow = "hidden";
+        }
+      });
+
+      document.querySelector(".dialog-ok").addEventListener("click", () => {
+        document.querySelector("#modal").classList.remove("active");
+        document.body.style.overflow = "";
+      });
+
+      function updateScore() {
+        document.querySelector("#attempts").textContent =
+          userDashboard.attempts;
+        document.querySelector("#wins").textContent = userDashboard.wins;
+      }
+
+      function startTimer() {
+        clearInterval(timerId);
+        timeLeft = 30;
+        timerId = setInterval(() => {
+          if (timeLeft <= 0 && scoreCount < 15) {
+            clearInterval(timerId);
+            isStarted = false;
+            startBtn.disabled = false;
+            userDashboard.attempts++;
+            startCount--;
+            scoreCount = 0;
+            scoreBoard.innerHTML = scoreCount;
+            counter.textContent = "00:00";
+            startBtn.textContent = "Start Game";
+            updateScore();
+            document.querySelector("#modal").classList.add("active");
+            document.querySelector(".dialog-text").textContent =
+              "You have used up the allotted time. Play game again.";
+            document.body.style.overflow = "hidden";
+            localStorage.setItem(currentPlayer, JSON.stringify(userDashboard));
+            return;
+          } else if (timeLeft > 0 && scoreCount === 2) {
+            clearInterval(timerId);
+            isStarted = false;
+            startBtn.disabled = false;
+            counter.textContent = "00:00";
+            scoreCount = 0;
+            scoreBoard.innerHTML = scoreCount;
+            userDashboard.attempts++;
+            userDashboard.wins++;
+            startCount--;
+            startBtn.textContent = "Start Game";
+            updateScore();
+            startBtn.classList.remove("active-green");
+            resetBtn.classList.remove("active-blue");
+            document.querySelector("#modal").classList.add("active");
+            document.querySelector(".dialog-text").textContent =
+              "You have completed the challenge. Your score will be updated. Go another round!";
+            document.body.style.overflow = "hidden";
+            localStorage.setItem(currentPlayer, JSON.stringify(userDashboard));
+            return;
+          }
+          localStorage.setItem(currentPlayer, JSON.stringify(userDashboard));
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+
+          counter.textContent = `${String(minutes).padStart(2, "0")}:${String(
+            seconds
+          ).padStart(2, "0")}`;
+          timeLeft--;
+          if (timeLeft > 0) {
+            startBtn.classList.add("active-green");
+            resetBtn.classList.add("active-blue");
+          } else {
+            startBtn.classList.remove("active-green");
+            resetBtn.classList.remove("active-blue");
+          }
+
+          if (timeLeft && scoreCount < 0) {
+            document
+              .querySelector(".score-count")
+              .classList.add("negative-score");
+          } else {
+            document
+              .querySelector(".score-count")
+              .classList.remove("negative-score");
+          }
+
+          if (timeLeft <= 30) {
+            counter.style.color = "red";
+          } else {
+            {
+              counter.style.color = "rgb(7, 216, 7)";
+            }
+          }
+        }, 1000);
+      }
+
+      function playGame(playerMove) {
+        const computerMove = pickComputerMove();
+        let result = "";
+
+        if (playerMove === "heads") {
+          if (computerMove === "heads") {
+            result = "win";
+          } else {
+            result = "lose";
+          }
+        } else if (playerMove === "tails") {
+          if (computerMove === "tails") {
+            result = "win";
+          } else {
+            result = "lose";
+          }
+        }
+
+        if (result === "win") {
+          scoreCount += 1;
+          scoreBoard.innerHTML = scoreCount;
+          motivation.innerText = "Yayy, You rock!!!";
+          motivation.classList.remove("do-not-display");
+        } else if (result === "lose") {
+          scoreCount -= 1;
+          scoreBoard.innerHTML = scoreCount;
+          motivation.innerText = "Opps, Try again!";
+          motivation.classList.remove("do-not-display");
+        }
+      }
+
+      function resetScore() {
+        scoreCount = 0;
+        scoreBoard.innerHTML = scoreCount;
+        motivation.classList.add("do-not-display");
+      }
+
+      function pickComputerMove() {
+        let randomNum = Math.random();
+        let computerMove = "";
+        if (randomNum <= 0.5) {
+          computerMove = "heads";
+        } else {
+          computerMove = "tails";
+        }
+        return computerMove;
+      }
+    </script>
+  </body>
+</html>
