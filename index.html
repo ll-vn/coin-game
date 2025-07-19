@@ -71,7 +71,8 @@
         scroll-behavior: smooth;
       }
 
-      h1, h2,
+      h1,
+      h2,
       .title {
         font-family: "Orbitron", sans-serif;
       }
@@ -460,7 +461,7 @@
         padding-bottom: 5px;
       }
 
-       .player-dashboard th {
+      .player-dashboard th {
         font-weight: bold;
         padding: 3px 0;
       }
@@ -595,22 +596,21 @@
               Tails. It is your job to make a right guess of the side the
               computer picks.
             </li>
-            
+
             <li>
               For every right guess, your score, starting at 0 gets an increment
               of 1 point.
             </li>
-            
+
             <li>
               Conversely, for every wrong guess, your score gets a decrement of
               one point.
             </li>
-            
+
             <li>
-              Your challenge is to get a positive score of 10 before
-              timeout.
+              Your challenge is to get a positive score of 10 before timeout.
             </li>
-            
+
             <li>
               Your number of attempts, wins and rank will be updated as you
               play.
@@ -619,9 +619,9 @@
               Also, you get the chance to reset the score whenever you want. So
               good luck!!!
             </li>
-             </ul>
-            <h2>Leaderboard</h2>
-            <ul>
+          </ul>
+          <h2>Leaderboard</h2>
+          <ul>
             <li>For wins from 0 to 5, your rank is set to Beginner</li>
             <li>
               For wins above 5 but less than or equal to 10, your rank is set to
@@ -738,14 +738,12 @@
       let isStarted = false;
       let timerId;
       let timeLeft;
-      let userScore = 0;
-      let attempts = 0;
       let startCount = 0;
       resetBtn.disabled = true;
       let muted = false;
       backgroundSound.volume = 0.3;
       backgroundSound.loop = true;
-      coinSound.volume = 0.2;
+      coinSound.volume = 0.3;
 
       // THEME FUNCTIONALITY
       toggleMode.addEventListener("click", () => {
@@ -786,7 +784,7 @@
 
       let wasPlaying = false;
 
-      document.addEventListener("visibilityChange", () => {
+      document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
           wasPlaying = !backgroundSound.paused;
           backgroundSound.pause();
@@ -886,9 +884,11 @@
           return;
         }
         if (nameInput) {
-           document.getElementById('user-name').innerHTML = `${usernameInput.value}'s`;
+          document.getElementById(
+            "user-name"
+          ).innerHTML = `${usernameInput.value}'s`;
         } else {
-          document.getElementById('user-name').innerHTML = "Player's";
+          document.getElementById("user-name").innerHTML = "Player's";
         }
 
         usernameOutput.innerHTML = `Player's name: ${usernameInput.value}`;
@@ -906,19 +906,20 @@
           document.body.style.overflow = "hidden";
           document.querySelector(
             ".dialog-text"
-          ).textContent = `New Player with name,  ${currentName} registered! Be sure to submit the exact when next you login to keep your user session.`;
+          ).innerHTML = `New Player with name,  ${currentName} registered! <br> Be sure to submit the exact name when next you login to keep your user session.`;
         } else {
           document.querySelector("#modal").classList.add("active");
           document.body.style.overflow = "hidden";
           document.querySelector(
             ".dialog-text"
-          ).textContent = `Welcome back, ${currentName}!`;
+          ).innerHTML = `Welcome back, ${currentName}! <br> Rank: ${userDashboard[currentName].rank}`;
         }
 
         saveStats();
         updateDashboard();
       }
-
+          
+        
       // GAME RULE DISPLAY AND HIDE
       showGameRule.addEventListener("click", () => {
         document.querySelector(".game-rule").classList.add("open");
@@ -930,10 +931,10 @@
         document.body.style.overflow = "";
       });
 
-      document.querySelector('#close-btn').addEventListener("click", () => {
+      document.querySelector("#close-btn").addEventListener("click", () => {
         document.querySelector(".game-rule").classList.remove("open");
         document.body.style.overflow = "";
-      })
+      });
 
       // GAME LOGICS
 
@@ -957,8 +958,10 @@
 
       headCoin.addEventListener("click", () => {
         if (isStarted && timeLeft > 0) {
-          coinSound.currentTime = 0;
-          coinSound.play();
+          if (!backgroundSound.muted) {
+            coinSound.currentTime = 0;
+            coinSound.play();
+          }
           headCoin.classList.add("bounce");
           setTimeout(() => headCoin.classList.remove("bounce"), 1000);
           playGame("heads");
@@ -971,8 +974,10 @@
 
       tailCoin.addEventListener("click", () => {
         if (isStarted && timeLeft > 0) {
-          coinSound.currentTime = 0;
-          coinSound.play();
+          if (!backgroundSound.muted) {
+            coinSound.currentTime = 0;
+            coinSound.play();
+          }
           tailCoin.classList.add("bounce");
           setTimeout(() => tailCoin.classList.remove("bounce"), 300);
           playGame("tails");
